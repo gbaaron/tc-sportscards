@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Account · TC Sports Cards</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏟️</text></svg>">
+  <link rel="stylesheet" href="/assets/theme.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav-row">
+      <a href="/" class="logo">
+        <span class="logo-mark">TC</span>
+        <span class="logo-text" data-config="site_name">TC Sports Cards</span>
+      </a>
+      <button class="mobile-toggle" data-mobile-toggle aria-label="Open menu">&#9776;</button>
+      <nav class="main-nav" data-mobile-menu>
+        <a href="/shop.html">Shop</a>
+        <a href="/rewards.html">Rewards</a>
+        <a href="/about.html">About</a>
+        <a href="/contact.html">Contact</a>
+        <a href="/dashboard.html" class="active" data-auth style="display:none">My Account</a>
+        <a href="/admin.html" data-admin style="display:none" class="admin-link">Admin</a>
+        <a href="#" data-auth data-logout style="display:none">Log Out</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero hero-compact">
+      <div class="hero-overlay"></div>
+      <div class="container">
+        <span class="hero-eyebrow">My Account</span>
+        <h1 data-user-name>Member</h1>
+        <p><span class="tier-badge" id="dashTier">Rookie</span> &nbsp; <span data-user-points>0</span> points</p>
+      </div>
+    </section>
+
+    <section class="section section-cream">
+      <div class="container">
+        <div class="tabs" id="dashTabs">
+          <a href="#overview" class="tab active" data-tab="overview">Overview</a>
+          <a href="#orders" class="tab" data-tab="orders">Orders</a>
+          <a href="#ratings" class="tab" data-tab="ratings">My Ratings</a>
+          <a href="#profile" class="tab" data-tab="profile">Profile</a>
+        </div>
+
+        <div class="tab-panel" id="panel-overview">
+          <div class="stat-grid">
+            <div class="stat-card"><div class="stat-num" data-user-points>0</div><div class="stat-label">Points balance</div></div>
+            <div class="stat-card"><div class="stat-num" id="statOrders">0</div><div class="stat-label">Lifetime orders</div></div>
+            <div class="stat-card"><div class="stat-num" id="statSpent">$0</div><div class="stat-label">Lifetime spend</div></div>
+            <div class="stat-card"><div class="stat-num" id="statGc">0</div><div class="stat-label">Gift cards earned</div></div>
+          </div>
+          <h3 class="mt-3">Recommended for you</h3>
+          <div class="product-grid" id="recsGrid"><p class="muted">Loading recommendations…</p></div>
+        </div>
+
+        <div class="tab-panel" id="panel-orders" style="display:none">
+          <div id="ordersList"><p class="muted">Loading orders…</p></div>
+        </div>
+
+        <div class="tab-panel" id="panel-ratings" style="display:none">
+          <div id="ratingsList"><p class="muted">Loading ratings…</p></div>
+        </div>
+
+        <div class="tab-panel" id="panel-profile" style="display:none">
+          <form id="profileForm" class="profile-form">
+            <div class="grid-2">
+              <div class="field"><label>Name</label><input type="text" id="pfName"></div>
+              <div class="field"><label>Phone</label><input type="tel" id="pfPhone"></div>
+            </div>
+            <div class="field"><label>Email</label><input type="email" id="pfEmail"></div>
+            <div class="grid-2">
+              <div class="field"><label>Favorite Sport</label>
+                <select id="pfSport">
+                  <option value="">— Select —</option><option>Baseball</option><option>Basketball</option><option>Football</option><option>Hockey</option><option>Soccer</option><option>Multi-Sport</option>
+                </select>
+              </div>
+              <div class="field"><label>Favorite Team</label><input type="text" id="pfTeam"></div>
+            </div>
+            <label class="checkbox"><input type="checkbox" id="pfMarketing"><span>Email me about new drops and rewards bonuses</span></label>
+            <button class="btn btn-primary" type="submit" id="pfSaveBtn">Save Changes</button>
+          </form>
+
+          <hr class="divider">
+
+          <h3>Change password</h3>
+          <form id="pwForm">
+            <div class="grid-2">
+              <div class="field"><label>Current password</label><input type="password" id="pwCurrent" required></div>
+              <div class="field"><label>New password</label><input type="password" id="pwNew" minlength="8" required></div>
+            </div>
+            <button class="btn btn-secondary" type="submit" id="pwSaveBtn">Update Password</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-bottom">
+      <span>&copy; <span id="year"></span> TC Sports Cards</span>
+      <span class="footer-attr">Powered by <strong>Global Storefront</strong></span>
+    </div>
+  </footer>
+
+  <div id="toastHost"></div>
+  <script src="/assets/api.js"></script>
+  <script src="/assets/cart.js"></script>
+  <script src="/assets/toast.js"></script>
+  <script src="/assets/auth.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    TCAuth.init();
+    if (!TCApi.isLoggedIn()) { window.location.href = '/login.html'; }
+
+    const TIER_CLASSES = { 'rookie': 'tier-rookie', 'veteran': 'tier-veteran', 'all-star': 'tier-allstar', 'hall of famer': 'tier-hof' };
+
+    // Tabs
+    function switchTab(name) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+      document.querySelectorAll('.tab-panel').forEach(p => p.style.display = (p.id === 'panel-' + name) ? '' : 'none');
+    }
+    document.querySelectorAll('.tab').forEach(t => {
+      t.addEventListener('click', (e) => { e.preventDefault(); location.hash = t.dataset.tab; switchTab(t.dataset.tab); });
+    });
+    function tabFromHash() {
+      const h = (location.hash || '#overview').slice(1);
+      return ['overview','orders','ratings','profile'].includes(h) ? h : 'overview';
+    }
+    switchTab(tabFromHash());
+    window.addEventListener('hashchange', () => switchTab(tabFromHash()));
+
+    (async function init() {
+      try {
+        const { user } = await TCApi.getUser();
+        if (user) {
+          TCApi.setCurrentUser(user);
+          window.dispatchEvent(new CustomEvent('authStateChanged'));
+          const tierEl = document.getElementById('dashTier');
+          tierEl.textContent = user.tier || 'Rookie';
+          tierEl.className = 'tier-badge ' + (TIER_CLASSES[(user.tier || '').toLowerCase()] || '');
+          document.getElementById('statSpent').textContent = '$' + Number(user.totalSpent || 0).toFixed(0);
+          fillProfile(user);
+        }
+        const params = new URLSearchParams(location.search);
+        if (params.get('welcome') === '1') {
+          showToast('Welcome to the Rewards Club! You\'re a Rookie tier member.', 'success', 5000);
+        }
+        loadOrders();
+        loadRatings();
+        loadRecs();
+        loadGcStat();
+      } catch (e) { showToast('Session expired. Please log in.', 'error'); setTimeout(() => location.href = '/login.html', 1500); }
+    })();
+
+    function fillProfile(u) {
+      document.getElementById('pfName').value = u.name || '';
+      document.getElementById('pfPhone').value = u.phone || '';
+      document.getElementById('pfEmail').value = u.email || '';
+      document.getElementById('pfSport').value = u.favoriteSport || '';
+      document.getElementById('pfTeam').value = u.favoriteTeam || '';
+      document.getElementById('pfMarketing').checked = !!u.marketingEmails;
+    }
+
+    async function loadOrders() {
+      const list = document.getElementById('ordersList');
+      try {
+        const { orders } = await TCApi.getOrders();
+        document.getElementById('statOrders').textContent = (orders || []).length;
+        if (!orders || !orders.length) {
+          list.innerHTML = '<p class="muted">No orders yet. <a href="/shop.html">Browse the shop</a> to get started.</p>';
+          return;
+        }
+        list.innerHTML = orders.map(o => `
+          <div class="order-card">
+            <div class="order-head">
+              <strong>${o.orderNumber}</strong>
+              <span class="order-status status-${(o.status || '').toLowerCase().replace(/\s+/g,'-')}">${o.status}</span>
+            </div>
+            <p class="muted-sm">${o.orderDate ? new Date(o.orderDate).toLocaleString() : ''} · ${o.fulfillmentMethod || 'pickup'}</p>
+            <p>${(o.itemsList || '').replace(/\n/g, '<br>')}</p>
+            <div class="order-foot">
+              <span>$${Number(o.total || 0).toFixed(2)}</span>
+              <span class="text-gold">+${o.pointsEarned || 0} pts${o.pointsRedeemed ? ' · -' + o.pointsRedeemed + ' redeemed' : ''}</span>
+            </div>
+          </div>
+        `).join('');
+      } catch (_) {
+        list.innerHTML = '<p class="muted">Could not load orders.</p>';
+      }
+    }
+
+    async function loadRatings() {
+      const list = document.getElementById('ratingsList');
+      try {
+        const { ratings } = await TCApi.getUserRatings();
+        if (!ratings || !ratings.length) {
+          list.innerHTML = '<p class="muted">No ratings yet. After ordering, leave a rating on the products.</p>';
+          return;
+        }
+        list.innerHTML = ratings.map(r => `
+          <div class="rating-row">
+            <strong>${r.productName}</strong>
+            <span class="stars">${'★'.repeat(r.stars)}${'☆'.repeat(5 - r.stars)}</span>
+            <p class="muted-sm">${r.comment || ''}</p>
+          </div>
+        `).join('');
+      } catch (_) {
+        list.innerHTML = '<p class="muted">Could not load ratings.</p>';
+      }
+    }
+
+    async function loadRecs() {
+      const grid = document.getElementById('recsGrid');
+      try {
+        const { recommendations } = await TCApi.getRecommendations();
+        const recs = (recommendations || []).slice(0, 4);
+        if (!recs.length) { grid.innerHTML = '<p class="muted">Browse the shop to get personalized picks.</p>'; return; }
+        grid.innerHTML = recs.map(p => `
+          <article class="product-card">
+            <div class="product-image" ${p.imageUrl ? `style="background-image:url('${p.imageUrl}')"` : ''}></div>
+            <div class="product-body">
+              <span class="product-cat">${p.category || 'Cards'}</span>
+              <h3 class="product-name">${p.name}</h3>
+              <div class="product-meta">
+                <span class="product-price">$${Number(p.price).toFixed(2)}</span>
+                <a href="/shop.html#p-${p.id}" class="btn btn-sm btn-secondary">View</a>
+              </div>
+            </div>
+          </article>
+        `).join('');
+      } catch (_) {
+        grid.innerHTML = '<p class="muted">Browse the shop for recommendations.</p>';
+      }
+    }
+
+    async function loadGcStat() {
+      try {
+        const { giftCards } = await TCApi.getGiftCards();
+        document.getElementById('statGc').textContent = (giftCards || []).length;
+      } catch (_) {}
+    }
+
+    document.getElementById('profileForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('pfSaveBtn');
+      btn.disabled = true; btn.textContent = 'Saving…';
+      try {
+        const payload = {
+          name: document.getElementById('pfName').value.trim(),
+          phone: document.getElementById('pfPhone').value.trim(),
+          email: document.getElementById('pfEmail').value.trim(),
+          favoriteSport: document.getElementById('pfSport').value,
+          favoriteTeam: document.getElementById('pfTeam').value.trim(),
+          marketingEmails: document.getElementById('pfMarketing').checked
+        };
+        const { user } = await TCApi.updateUser(payload);
+        if (user) { TCApi.setCurrentUser(user); window.dispatchEvent(new CustomEvent('authStateChanged')); }
+        showToast('Profile saved.', 'success');
+      } catch (e) {
+        showToast(e.message || 'Could not save.', 'error');
+      } finally {
+        btn.disabled = false; btn.textContent = 'Save Changes';
+      }
+    });
+
+    document.getElementById('pwForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('pwSaveBtn');
+      btn.disabled = true; btn.textContent = 'Updating…';
+      try {
+        await TCApi.changePassword(document.getElementById('pwCurrent').value, document.getElementById('pwNew').value);
+        document.getElementById('pwForm').reset();
+        showToast('Password updated.', 'success');
+      } catch (e) {
+        showToast(e.message || 'Could not update.', 'error');
+      } finally {
+        btn.disabled = false; btn.textContent = 'Update Password';
+      }
+    });
+  </script>
+</body>
+</html>

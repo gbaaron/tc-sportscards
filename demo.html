@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Site Overview · TC Sports Cards</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏟️</text></svg>">
+  <link rel="stylesheet" href="/assets/theme.css">
+  <style>
+    .demo-section { padding: 60px 0; }
+    .demo-section.storefront { background: var(--cream); }
+    .demo-section.customer { background: var(--cream-darker); }
+    .demo-section.admin { background: #ebe2cf; }
+    .demo-tag-row { display:flex; align-items:center; gap:12px; margin-bottom: 8px; }
+    .demo-tag { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; padding: 4px 10px; border-radius: 999px; text-transform: uppercase; }
+    .demo-tag.public  { background: #c8e6c9; color: #1b5e20; }
+    .demo-tag.member  { background: #c5cae9; color: #1a237e; }
+    .demo-tag.admin   { background: #ffe0b2; color: #6d4c00; }
+    .demo-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin-top: 24px; }
+    .demo-card { background: #fff; border: 1px solid rgba(20,33,61,0.08); border-radius: 12px; padding: 24px; box-shadow: 0 4px 12px rgba(20,33,61,0.04); }
+    .demo-card h3 { margin: 0 0 6px; }
+    .demo-card .audience { color: var(--muted); font-size: 14px; margin-bottom: 12px; }
+    .demo-card a.btn { margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav-row">
+      <a href="/" class="logo">
+        <span class="logo-mark">TC</span>
+        <span class="logo-text" data-config="site_name">TC Sports Cards</span>
+      </a>
+      <nav class="main-nav">
+        <a href="/shop.html">Shop</a>
+        <a href="/rewards.html">Rewards</a>
+        <a href="/about.html">About</a>
+        <a href="/contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero hero-compact">
+      <div class="hero-overlay"></div>
+      <div class="container">
+        <span class="hero-eyebrow">Site Overview</span>
+        <h1>Three Sections, One Shop</h1>
+        <p>The site has three audiences: the customers who walk in, the members who log in, and you — the owner. Here's the whole map.</p>
+      </div>
+    </section>
+
+    <section class="demo-section storefront">
+      <div class="container">
+        <div class="demo-tag-row"><span class="demo-tag public">Public · Storefront</span><h2 style="margin:0">What customers see</h2></div>
+        <p class="muted">Everyone, no login required.</p>
+        <div class="demo-grid">
+          <div class="demo-card"><h3>Home</h3><p class="audience">Hero, featured online exclusives, rewards teaser.</p><a href="/" class="btn btn-sm btn-secondary">View</a></div>
+          <div class="demo-card"><h3>Shop</h3><p class="audience">10–15 online exclusives with filters and cart.</p><a href="/shop.html" class="btn btn-sm btn-secondary">View</a></div>
+          <div class="demo-card"><h3>About</h3><p class="audience">Shop story, hours, online exclusives explanation.</p><a href="/about.html" class="btn btn-sm btn-secondary">View</a></div>
+          <div class="demo-card"><h3>Contact</h3><p class="audience">Hours, phone, email, message form.</p><a href="/contact.html" class="btn btn-sm btn-secondary">View</a></div>
+          <div class="demo-card"><h3>Rewards (preview)</h3><p class="audience">Explains how points and gift cards work.</p><a href="/rewards.html" class="btn btn-sm btn-secondary">View</a></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="demo-section customer">
+      <div class="container">
+        <div class="demo-tag-row"><span class="demo-tag member">Members · Customer Account</span><h2 style="margin:0">What logged-in customers get</h2></div>
+        <p class="muted">After they sign up. Points, gift cards, order history.</p>
+        <div class="demo-grid">
+          <div class="demo-card"><h3>Sign Up</h3><p class="audience">Email, password, favorites, marketing opt-in.</p><a href="/signup.html" class="btn btn-sm btn-secondary">View</a></div>
+          <div class="demo-card"><h3>Log In</h3><p class="audience">Email + password.</p><a href="/login.html" class="btn btn-sm btn-secondary">View</a></div>
+          <div class="demo-card"><h3>Dashboard</h3><p class="audience">Stats, orders, ratings, profile, password.</p><a href="/dashboard.html" class="btn btn-sm btn-secondary">View</a></div>
+          <div class="demo-card"><h3>Rewards Center</h3><p class="audience">Points balance, tier progress, gift card redemption.</p><a href="/rewards.html" class="btn btn-sm btn-secondary">View</a></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="demo-section admin">
+      <div class="container">
+        <div class="demo-tag-row"><span class="demo-tag admin">Admin · Owner Tools</span><h2 style="margin:0">What you (the owner) see</h2></div>
+        <p class="muted">Hidden from everyone else. Manage products, orders, and gift cards.</p>
+        <div class="demo-grid">
+          <div class="demo-card"><h3>Admin Dashboard</h3><p class="audience">Products, orders, gift card requests, customer overview.</p><a href="/admin.html" class="btn btn-sm btn-secondary">View</a></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-bottom">
+      <span>&copy; <span id="year"></span> TC Sports Cards</span>
+      <span class="footer-attr">Built by <strong>Global Storefront</strong> — ready to customize</span>
+    </div>
+  </footer>
+
+  <div id="toastHost"></div>
+  <script src="/assets/api.js"></script>
+  <script src="/assets/cart.js"></script>
+  <script src="/assets/toast.js"></script>
+  <script src="/assets/auth.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    TCAuth.init();
+  </script>
+</body>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rewards · TC Sports Cards</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏟️</text></svg>">
+  <link rel="stylesheet" href="/assets/theme.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav-row">
+      <a href="/" class="logo">
+        <span class="logo-mark">TC</span>
+        <span class="logo-text" data-config="site_name">TC Sports Cards</span>
+      </a>
+      <button class="mobile-toggle" data-mobile-toggle aria-label="Open menu">&#9776;</button>
+      <nav class="main-nav" data-mobile-menu>
+        <a href="/shop.html">Shop</a>
+        <a href="/rewards.html" class="active">Rewards</a>
+        <a href="/about.html">About</a>
+        <a href="/contact.html">Contact</a>
+        <a href="/dashboard.html" data-auth style="display:none">My Account</a>
+        <a href="/login.html" data-guest>Log In</a>
+        <a href="/signup.html" data-guest class="btn btn-gold btn-sm">Sign Up</a>
+        <a href="#" data-auth data-logout style="display:none">Log Out</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero" data-image-slot="rewards_banner">
+      <div class="hero-overlay"></div>
+      <div class="container">
+        <span class="hero-eyebrow">The Rewards Club</span>
+        <h1>Earn Points. Redeem Gift Cards.</h1>
+        <p>Every online order earns points. Climb the tiers. Trade points for store credit.</p>
+      </div>
+    </section>
+
+    <!-- Guest view -->
+    <section class="section section-cream" data-guest>
+      <div class="container two-col">
+        <div>
+          <span class="eyebrow">How it works</span>
+          <h2>Three simple rules</h2>
+          <ol class="big-list">
+            <li><strong>Earn:</strong> 1 point per dollar spent online — plus bonus points on featured items.</li>
+            <li><strong>Climb:</strong> Hit point thresholds to unlock multipliers (up to 2x).</li>
+            <li><strong>Redeem:</strong> Trade 100 points for $1 toward any in-store or online purchase.</li>
+          </ol>
+          <a href="/signup.html" class="btn btn-primary">Create Free Account</a>
+          <p class="muted-sm mt-2">Already a member? <a href="/login.html">Log in</a> to see your points.</p>
+        </div>
+        <div class="info-card">
+          <h3>Minimum Redemption</h3>
+          <p>500 points = $5 gift card. Redeem any amount above in 100-point increments.</p>
+          <h3>No Expiration</h3>
+          <p>Your points never expire. Stack them up for the next box break or vintage find.</p>
+          <h3>In-Store Too</h3>
+          <p>Gift cards work for anything we carry — singles, boxes, supplies, anything in the case.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Authenticated view -->
+    <section class="section section-navy" data-auth style="display:none">
+      <div class="container">
+        <div class="rewards-card">
+          <div class="rewards-card-top">
+            <div>
+              <span class="eyebrow eyebrow-gold">Your Rewards</span>
+              <h2 data-user-name>Member</h2>
+              <span class="tier-badge" id="userTierBadge">Rookie</span>
+            </div>
+            <div class="points-display">
+              <span class="points-num" data-user-points>0</span>
+              <span class="points-label">points</span>
+            </div>
+          </div>
+          <div class="tier-progress" id="tierProgress">
+            <div class="tier-progress-bar"><div class="tier-progress-fill" id="tierProgressFill"></div></div>
+            <p class="muted-light" id="tierProgressText">—</p>
+          </div>
+        </div>
+
+        <div class="redeem-grid">
+          <div class="redeem-card">
+            <h3>Redeem for a Gift Card</h3>
+            <p class="muted-light">100 points = $1. Minimum 500 points ($5). Increments of 100.</p>
+            <form id="redeemForm">
+              <div class="field">
+                <label for="redeemAmount">Points to redeem</label>
+                <input type="number" id="redeemAmount" min="500" step="100" placeholder="500">
+                <span class="hint" id="redeemHint">You'll get a $5.00 gift card.</span>
+              </div>
+              <button class="btn btn-gold btn-block" id="redeemBtn" type="submit">Request Gift Card</button>
+            </form>
+          </div>
+          <div class="redeem-card">
+            <h3>Your Gift Cards</h3>
+            <div id="giftCardsList" class="gift-card-list">
+              <p class="muted-light">Loading…</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-cream">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">The Tiers</span>
+          <h2>Climb the Lineup</h2>
+        </div>
+        <div class="tier-grid" id="tierGrid">
+          <div class="loading-placeholder">Loading tiers…</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-bottom">
+      <span>&copy; <span id="year"></span> TC Sports Cards</span>
+      <span class="footer-attr">Powered by <strong>Global Storefront</strong></span>
+    </div>
+  </footer>
+
+  <div id="toastHost"></div>
+  <script src="/assets/api.js"></script>
+  <script src="/assets/cart.js"></script>
+  <script src="/assets/toast.js"></script>
+  <script src="/assets/auth.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    TCAuth.init();
+
+    const TIER_CLASSES = { 'rookie': 'tier-rookie', 'veteran': 'tier-veteran', 'all-star': 'tier-allstar', 'hall of famer': 'tier-hof' };
+
+    (async function init() {
+      const tiers = await loadTiers();
+      if (TCApi.isLoggedIn()) {
+        await refreshUser();
+        await loadGiftCards();
+        renderTierProgress(tiers);
+        wireRedeem();
+      }
+    })();
+
+    async function loadTiers() {
+      const grid = document.getElementById('tierGrid');
+      try {
+        const { tiers } = await TCApi.getTiers();
+        const list = (tiers || []).sort((a, b) => (a.minimumPoints || 0) - (b.minimumPoints || 0));
+        grid.innerHTML = list.map(t => `
+          <div class="tier-card ${TIER_CLASSES[(t.name || '').toLowerCase()] || ''}">
+            <div class="tier-card-head">
+              <span class="tier-badge ${TIER_CLASSES[(t.name || '').toLowerCase()] || ''}">${t.name}</span>
+              <span class="tier-mult">${t.multiplier}x points</span>
+            </div>
+            <div class="tier-points">${(t.minimumPoints || 0).toLocaleString()} pts</div>
+            <p>${t.perks || ''}</p>
+          </div>
+        `).join('');
+        return list;
+      } catch (_) {
+        grid.innerHTML = '<p class="muted">Could not load tiers.</p>';
+        return [];
+      }
+    }
+
+    async function refreshUser() {
+      try {
+        const { user } = await TCApi.getUser();
+        if (user) {
+          TCApi.setCurrentUser(user);
+          document.getElementById('userTierBadge').textContent = user.tier || 'Rookie';
+          document.getElementById('userTierBadge').className = 'tier-badge ' + (TIER_CLASSES[(user.tier || '').toLowerCase()] || '');
+          window.dispatchEvent(new CustomEvent('authStateChanged'));
+        }
+      } catch (_) {}
+    }
+
+    function renderTierProgress(tiers) {
+      const user = TCApi.getCurrentUser();
+      if (!user || !tiers.length) return;
+      const points = user.points || 0;
+      let current = tiers[0], next = null;
+      for (let i = 0; i < tiers.length; i++) {
+        if (points >= (tiers[i].minimumPoints || 0)) {
+          current = tiers[i];
+          next = tiers[i + 1] || null;
+        }
+      }
+      const fill = document.getElementById('tierProgressFill');
+      const text = document.getElementById('tierProgressText');
+      if (!next) {
+        fill.style.width = '100%';
+        text.textContent = `You're at the top tier — ${current.name}. Stack points for gift cards.`;
+      } else {
+        const range = (next.minimumPoints || 0) - (current.minimumPoints || 0);
+        const have = points - (current.minimumPoints || 0);
+        const pct = Math.max(4, Math.min(100, (have / range) * 100));
+        fill.style.width = pct + '%';
+        const need = (next.minimumPoints || 0) - points;
+        text.textContent = `${need.toLocaleString()} points until ${next.name} (${next.multiplier}x).`;
+      }
+    }
+
+    async function loadGiftCards() {
+      const list = document.getElementById('giftCardsList');
+      try {
+        const { giftCards } = await TCApi.getGiftCards();
+        if (!giftCards || !giftCards.length) {
+          list.innerHTML = '<p class="muted-light">No gift cards yet. Redeem points to get started.</p>';
+          return;
+        }
+        list.innerHTML = giftCards.map(g => `
+          <div class="gift-card-item">
+            <div>
+              <div class="gc-code">${g.code}</div>
+              <div class="gc-meta">$${Number(g.value || 0).toFixed(2)} · ${g.status}</div>
+            </div>
+            <div class="gc-pts">${(g.pointsRedeemed || 0).toLocaleString()} pts</div>
+          </div>
+        `).join('');
+      } catch (_) {
+        list.innerHTML = '<p class="muted-light">Could not load gift cards.</p>';
+      }
+    }
+
+    function wireRedeem() {
+      const input = document.getElementById('redeemAmount');
+      const hint = document.getElementById('redeemHint');
+      input.addEventListener('input', () => {
+        const pts = parseInt(input.value || '0', 10) || 0;
+        const dollars = (pts / 100).toFixed(2);
+        hint.textContent = pts < 500 ? 'Minimum 500 points.' : `You'll get a $${dollars} gift card.`;
+      });
+      document.getElementById('redeemForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('redeemBtn');
+        const pts = parseInt(input.value || '0', 10) || 0;
+        if (pts < 500 || pts % 100 !== 0) {
+          showToast('Must be at least 500 points, in 100-point increments.', 'error');
+          return;
+        }
+        btn.disabled = true; btn.textContent = 'Requesting…';
+        try {
+          await TCApi.redeemGiftCard(pts);
+          showToast('Gift card requested! Check your account for the code.', 'success');
+          input.value = '';
+          hint.textContent = 'You\'ll get a $5.00 gift card.';
+          await refreshUser();
+          await loadGiftCards();
+        } catch (err) {
+          showToast(err.message || 'Could not redeem.', 'error');
+        } finally {
+          btn.disabled = false; btn.textContent = 'Request Gift Card';
+        }
+      });
+    }
+  </script>
+</body>
+</html>

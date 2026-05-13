@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin · TC Sports Cards</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏟️</text></svg>">
+  <link rel="stylesheet" href="/assets/theme.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav-row">
+      <a href="/" class="logo">
+        <span class="logo-mark">TC</span>
+        <span class="logo-text" data-config="site_name">TC Sports Cards</span>
+      </a>
+      <button class="mobile-toggle" data-mobile-toggle aria-label="Open menu">&#9776;</button>
+      <nav class="main-nav" data-mobile-menu>
+        <a href="/shop.html">Shop</a>
+        <a href="/dashboard.html">My Account</a>
+        <a href="/admin.html" class="active admin-link">Admin</a>
+        <a href="#" data-logout>Log Out</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero hero-compact">
+      <div class="hero-overlay"></div>
+      <div class="container">
+        <span class="hero-eyebrow">Owner Tools</span>
+        <h1>Admin Dashboard</h1>
+      </div>
+    </section>
+
+    <section class="section section-cream">
+      <div class="container">
+        <div class="stat-grid" id="statGrid">
+          <div class="stat-card"><div class="stat-num" id="sUsers">—</div><div class="stat-label">Members</div></div>
+          <div class="stat-card"><div class="stat-num" id="sOrders">—</div><div class="stat-label">Orders</div></div>
+          <div class="stat-card"><div class="stat-num" id="sRevenue">—</div><div class="stat-label">Revenue</div></div>
+          <div class="stat-card"><div class="stat-num" id="sGcPending">—</div><div class="stat-label">Pending Gift Cards</div></div>
+        </div>
+
+        <div class="tabs mt-3">
+          <a href="#products" class="tab active" data-tab="products">Products</a>
+          <a href="#orders" class="tab" data-tab="orders">Orders</a>
+          <a href="#giftcards" class="tab" data-tab="giftcards">Gift Cards</a>
+        </div>
+
+        <div class="tab-panel" id="panel-products">
+          <div class="admin-toolbar">
+            <h2>Products</h2>
+            <button class="btn btn-primary btn-sm" onclick="openProductModal()">+ Add Product</button>
+          </div>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Active</th><th></th></tr></thead>
+              <tbody id="productsBody"><tr><td colspan="6" class="muted">Loading…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="tab-panel" id="panel-orders" style="display:none">
+          <h2>Orders</h2>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead><tr><th>Order #</th><th>Customer</th><th>Total</th><th>Status</th><th>Date</th><th></th></tr></thead>
+              <tbody id="ordersBody"><tr><td colspan="6" class="muted">Loading…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="tab-panel" id="panel-giftcards" style="display:none">
+          <h2>Gift Card Requests</h2>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead><tr><th>Code</th><th>Customer</th><th>Points</th><th>Value</th><th>Status</th><th></th></tr></thead>
+              <tbody id="gcBody"><tr><td colspan="6" class="muted">Loading…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Product Modal -->
+  <div class="modal-overlay" id="productModal" style="display:none">
+    <div class="modal-backdrop" onclick="closeProductModal()"></div>
+    <div class="modal-panel">
+      <header class="modal-head">
+        <h2 id="pmTitle">Add Product</h2>
+        <button class="icon-btn" onclick="closeProductModal()">&times;</button>
+      </header>
+      <form id="productForm" class="modal-body">
+        <input type="hidden" id="pmId">
+        <div class="field"><label>Name</label><input type="text" id="pmName" required></div>
+        <div class="grid-2">
+          <div class="field"><label>Category</label><input type="text" id="pmCategory" placeholder="Sealed Box, Repack, Singles, ..."></div>
+          <div class="field"><label>Sport</label>
+            <select id="pmSport">
+              <option value="">— Select —</option><option>Baseball</option><option>Basketball</option><option>Football</option><option>Hockey</option><option>Multi-Sport</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="field"><label>Price ($)</label><input type="number" id="pmPrice" step="0.01" min="0" required></div>
+          <div class="field"><label>Bonus Points</label><input type="number" id="pmBonus" min="0" value="0"></div>
+        </div>
+        <div class="field"><label>Description</label><textarea id="pmDesc" rows="3"></textarea></div>
+        <div class="grid-2">
+          <div class="field"><label>Year</label><input type="text" id="pmYear"></div>
+          <div class="field"><label>Manufacturer</label><input type="text" id="pmManu"></div>
+        </div>
+        <div class="grid-2">
+          <div class="field"><label>Stock</label><input type="number" id="pmStock" min="0" value="0"></div>
+          <div class="field"><label>Image URL</label><input type="url" id="pmImage"></div>
+        </div>
+        <div class="grid-2">
+          <label class="checkbox"><input type="checkbox" id="pmActive" checked><span>Available</span></label>
+          <label class="checkbox"><input type="checkbox" id="pmExclusive" checked><span>Online Exclusive</span></label>
+        </div>
+        <div class="checkout-actions">
+          <button type="button" class="btn btn-ghost" onclick="closeProductModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-bottom">
+      <span>&copy; <span id="year"></span> TC Sports Cards</span>
+      <span class="footer-attr">Powered by <strong>Global Storefront</strong></span>
+    </div>
+  </footer>
+
+  <div id="toastHost"></div>
+  <script src="/assets/api.js"></script>
+  <script src="/assets/cart.js"></script>
+  <script src="/assets/toast.js"></script>
+  <script src="/assets/auth.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    TCAuth.init();
+    if (!TCApi.isLoggedIn()) { window.location.href = '/login.html'; }
+
+    // Tabs
+    function switchTab(name) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+      document.querySelectorAll('.tab-panel').forEach(p => p.style.display = (p.id === 'panel-' + name) ? '' : 'none');
+    }
+    document.querySelectorAll('.tab').forEach(t => {
+      t.addEventListener('click', (e) => { e.preventDefault(); location.hash = t.dataset.tab; switchTab(t.dataset.tab); });
+    });
+    const initialTab = (location.hash || '#products').slice(1);
+    switchTab(['products','orders','giftcards'].includes(initialTab) ? initialTab : 'products');
+
+    (async function init() {
+      try {
+        const { user } = await TCApi.getUser();
+        if (!user || !user.isAdmin) {
+          showToast('Admin access required.', 'error');
+          setTimeout(() => location.href = '/dashboard.html', 1500);
+          return;
+        }
+        loadStats();
+        loadProducts();
+        loadOrders();
+        loadGiftCards();
+      } catch (_) { location.href = '/login.html'; }
+    })();
+
+    async function loadStats() {
+      try {
+        const { stats } = await TCApi.adminStats();
+        document.getElementById('sUsers').textContent = (stats.userCount || 0).toLocaleString();
+        document.getElementById('sOrders').textContent = (stats.orderCount || 0).toLocaleString();
+        document.getElementById('sRevenue').textContent = '$' + Number(stats.totalRevenue || 0).toLocaleString(undefined, { maximumFractionDigits: 0 });
+        document.getElementById('sGcPending').textContent = (stats.pendingGiftCards || 0).toLocaleString();
+      } catch (_) {}
+    }
+
+    async function loadProducts() {
+      const body = document.getElementById('productsBody');
+      try {
+        const { products } = await TCApi.getProducts();
+        if (!products || !products.length) { body.innerHTML = '<tr><td colspan="6" class="muted">No products.</td></tr>'; return; }
+        body.innerHTML = products.map(p => `
+          <tr>
+            <td><strong>${p.name}</strong></td>
+            <td>${p.category || '—'}</td>
+            <td>$${Number(p.price).toFixed(2)}</td>
+            <td>${p.stock != null ? p.stock : '—'}</td>
+            <td>${p.isAvailable ? 'Yes' : 'No'}</td>
+            <td>
+              <button class="btn btn-sm btn-ghost" onclick='editProduct(${JSON.stringify(p).replace(/'/g, "&#39;")})'>Edit</button>
+              <button class="btn btn-sm btn-ghost text-red" onclick="deleteProduct('${p.id}')">Delete</button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (_) {
+        body.innerHTML = '<tr><td colspan="6" class="muted">Could not load.</td></tr>';
+      }
+    }
+
+    function openProductModal() {
+      document.getElementById('pmTitle').textContent = 'Add Product';
+      document.getElementById('productForm').reset();
+      document.getElementById('pmId').value = '';
+      document.getElementById('pmActive').checked = true;
+      document.getElementById('pmExclusive').checked = true;
+      document.getElementById('productModal').style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+    function closeProductModal() {
+      document.getElementById('productModal').style.display = 'none';
+      document.body.style.overflow = '';
+    }
+    function editProduct(p) {
+      document.getElementById('pmTitle').textContent = 'Edit Product';
+      document.getElementById('pmId').value = p.id;
+      document.getElementById('pmName').value = p.name || '';
+      document.getElementById('pmCategory').value = p.category || '';
+      document.getElementById('pmSport').value = p.sport || '';
+      document.getElementById('pmPrice').value = p.price || 0;
+      document.getElementById('pmBonus').value = p.bonusPoints || 0;
+      document.getElementById('pmDesc').value = p.description || '';
+      document.getElementById('pmYear').value = p.year || '';
+      document.getElementById('pmManu').value = p.manufacturer || '';
+      document.getElementById('pmStock').value = p.stock || 0;
+      document.getElementById('pmImage').value = p.imageUrl || '';
+      document.getElementById('pmActive').checked = !!p.isAvailable;
+      document.getElementById('pmExclusive').checked = !!p.isOnlineExclusive;
+      document.getElementById('productModal').style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+    async function deleteProduct(id) {
+      if (!confirm('Delete this product? This cannot be undone.')) return;
+      try {
+        await TCApi.adminProducts('delete', id);
+        showToast('Product deleted.', 'success');
+        loadProducts();
+      } catch (e) { showToast(e.message || 'Could not delete.', 'error'); }
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeProductModal(); });
+
+    document.getElementById('productForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('pmId').value;
+      const fields = {
+        name: document.getElementById('pmName').value.trim(),
+        category: document.getElementById('pmCategory').value.trim(),
+        sport: document.getElementById('pmSport').value,
+        price: parseFloat(document.getElementById('pmPrice').value || '0'),
+        bonusPoints: parseInt(document.getElementById('pmBonus').value || '0', 10),
+        description: document.getElementById('pmDesc').value.trim(),
+        year: document.getElementById('pmYear').value.trim(),
+        manufacturer: document.getElementById('pmManu').value.trim(),
+        stock: parseInt(document.getElementById('pmStock').value || '0', 10),
+        imageUrl: document.getElementById('pmImage').value.trim(),
+        isAvailable: document.getElementById('pmActive').checked,
+        isOnlineExclusive: document.getElementById('pmExclusive').checked
+      };
+      try {
+        await TCApi.adminProducts(id ? 'update' : 'create', id || null, fields);
+        showToast('Saved.', 'success');
+        closeProductModal();
+        loadProducts();
+      } catch (e) { showToast(e.message || 'Could not save.', 'error'); }
+    });
+
+    async function loadOrders() {
+      const body = document.getElementById('ordersBody');
+      try {
+        const { orders } = await TCApi.adminGetOrders();
+        if (!orders || !orders.length) { body.innerHTML = '<tr><td colspan="6" class="muted">No orders.</td></tr>'; return; }
+        body.innerHTML = orders.map(o => `
+          <tr>
+            <td><strong>${o.orderNumber}</strong></td>
+            <td>${o.userName || '—'}<br><span class="muted-sm">${o.userEmail || ''}</span></td>
+            <td>$${Number(o.total || 0).toFixed(2)}</td>
+            <td>
+              <select onchange="updateOrderStatus('${o.id}', this.value)">
+                ${['Pending','Processing','Ready for Pickup','Shipped','Completed','Cancelled'].map(s => `<option ${s === o.status ? 'selected' : ''}>${s}</option>`).join('')}
+              </select>
+            </td>
+            <td>${o.orderDate ? new Date(o.orderDate).toLocaleDateString() : ''}</td>
+            <td><button class="btn btn-sm btn-ghost" onclick="alert(\`${(o.itemsList || '').replace(/`/g,"\\\`").replace(/\n/g,'\\n')}\`)">View</button></td>
+          </tr>
+        `).join('');
+      } catch (_) {
+        body.innerHTML = '<tr><td colspan="6" class="muted">Could not load.</td></tr>';
+      }
+    }
+    async function updateOrderStatus(id, status) {
+      try { await TCApi.adminUpdateOrder({ id, status }); showToast('Status updated.', 'success'); }
+      catch (e) { showToast(e.message || 'Could not update.', 'error'); }
+    }
+
+    async function loadGiftCards() {
+      const body = document.getElementById('gcBody');
+      try {
+        const { giftCards } = await TCApi.adminGetGiftCards();
+        if (!giftCards || !giftCards.length) { body.innerHTML = '<tr><td colspan="6" class="muted">No gift cards.</td></tr>'; return; }
+        body.innerHTML = giftCards.map(g => `
+          <tr>
+            <td><code>${g.code}</code></td>
+            <td>${g.userName || '—'}<br><span class="muted-sm">${g.userEmail || ''}</span></td>
+            <td>${(g.pointsRedeemed || 0).toLocaleString()}</td>
+            <td>$${Number(g.value || 0).toFixed(2)}</td>
+            <td>
+              <select onchange="updateGcStatus('${g.id}', this.value)">
+                ${['Pending','Issued','Used','Cancelled'].map(s => `<option ${s === g.status ? 'selected' : ''}>${s}</option>`).join('')}
+              </select>
+            </td>
+            <td><span class="muted-sm">${g.requestedAt ? new Date(g.requestedAt).toLocaleDateString() : ''}</span></td>
+          </tr>
+        `).join('');
+      } catch (_) {
+        body.innerHTML = '<tr><td colspan="6" class="muted">Could not load.</td></tr>';
+      }
+    }
+    async function updateGcStatus(id, status) {
+      try { await TCApi.adminUpdateGiftCard({ id, status }); showToast('Updated.', 'success'); loadGiftCards(); }
+      catch (e) { showToast(e.message || 'Could not update.', 'error'); }
+    }
+  </script>
+</body>
+</html>

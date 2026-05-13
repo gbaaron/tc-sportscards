@@ -1,0 +1,17 @@
+{
+  "name": "tc-sportscards",
+  "version": "1.0.0",
+  "description": "TC Sports Cards \u2014 Zeeland, Michigan. Online storefront + rewards program.",
+  "private": true,
+  "scripts": {
+    "dev": "netlify dev"
+  },
+  "dependencies": {
+    "airtable": "^0.12.2",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

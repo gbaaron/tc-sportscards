@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About · TC Sports Cards</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏟️</text></svg>">
+  <link rel="stylesheet" href="/assets/theme.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav-row">
+      <a href="/" class="logo">
+        <span class="logo-mark">TC</span>
+        <span class="logo-text" data-config="site_name">TC Sports Cards</span>
+      </a>
+      <button class="mobile-toggle" data-mobile-toggle aria-label="Open menu">&#9776;</button>
+      <nav class="main-nav" data-mobile-menu>
+        <a href="/shop.html">Shop</a>
+        <a href="/rewards.html">Rewards</a>
+        <a href="/about.html" class="active">About</a>
+        <a href="/contact.html">Contact</a>
+        <a href="/dashboard.html" data-auth style="display:none">My Account</a>
+        <a href="/login.html" data-guest>Log In</a>
+        <a href="/signup.html" data-guest class="btn btn-gold btn-sm">Sign Up</a>
+        <a href="#" data-auth data-logout style="display:none">Log Out</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero" data-image-slot="about_banner">
+      <div class="hero-overlay"></div>
+      <div class="container">
+        <span class="hero-eyebrow">About TC Sports Cards</span>
+        <h1>A Hobby Shop Built by Collectors</h1>
+      </div>
+    </section>
+
+    <section class="section section-cream">
+      <div class="container narrow">
+        <p class="lead" data-config="about_intro">TC Sports Cards is Zeeland's home base for sports card collectors — vintage and modern. From wax-pack relics to the newest rookie hits, the shop has been quietly stacking the case for years.</p>
+        <h2>The Case</h2>
+        <p>Walk in and you'll find thousands and thousands of singles, sealed boxes, supplies, vintage finds, and memorabilia. The case is too deep to put online — instead, the shop puts up a small, curated set of online exclusives every month. Sealed product, special repacks, mystery hits, and the kind of items that move fast.</p>
+        <h2>Online Exclusives</h2>
+        <p>Items listed on this site can <em>only</em> be purchased online. Pick them up at the counter or have them shipped. Every order earns rewards points. Climb the lineup and stack a multiplier.</p>
+        <h2>Why Rewards?</h2>
+        <p>Because the hobby is a long game. The longer you collect, the better your points work for you. Hall of Famer tier earns double — every dollar a permanent investment in your next break.</p>
+        <h2>Stop In</h2>
+        <p>The shop is open <span data-config="hours_weekday">Mon–Fri 11–7</span>, <span data-config="hours_saturday">Sat 10–6</span>. We're at <span data-config="address_line1">123 Main Avenue</span>, <span data-config="address_line2">Zeeland, MI 49464</span>. Bring something to trade — we'll take a look.</p>
+        <div class="center mt-3">
+          <a href="/shop.html" class="btn btn-primary">Browse the Online Exclusives</a>
+          <a href="/contact.html" class="btn btn-ghost">Get in Touch</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-bottom">
+      <span>&copy; <span id="year"></span> TC Sports Cards</span>
+      <span class="footer-attr">Powered by <strong>Global Storefront</strong></span>
+    </div>
+  </footer>
+
+  <div id="toastHost"></div>
+  <script src="/assets/api.js"></script>
+  <script src="/assets/cart.js"></script>
+  <script src="/assets/toast.js"></script>
+  <script src="/assets/auth.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    TCAuth.init();
+  </script>
+</body>
+</html>

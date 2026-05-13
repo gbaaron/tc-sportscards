@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log In · TC Sports Cards</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏟️</text></svg>">
+  <link rel="stylesheet" href="/assets/theme.css">
+</head>
+<body class="auth-body">
+  <header class="site-header">
+    <div class="container nav-row">
+      <a href="/" class="logo">
+        <span class="logo-mark">TC</span>
+        <span class="logo-text" data-config="site_name">TC Sports Cards</span>
+      </a>
+      <nav class="main-nav">
+        <a href="/shop.html">Shop</a>
+        <a href="/rewards.html">Rewards</a>
+        <a href="/about.html">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="auth-main">
+    <div class="auth-card">
+      <h1>Welcome Back</h1>
+      <p class="muted">Log in to earn points, see order history, and redeem gift cards.</p>
+      <form id="loginForm">
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required autocomplete="email">
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required autocomplete="current-password">
+        </div>
+        <div id="loginError" class="form-error" style="display:none"></div>
+        <button type="submit" class="btn btn-primary btn-block" id="loginBtn">Log In</button>
+      </form>
+      <p class="auth-footer">No account yet? <a href="/signup.html">Sign up</a></p>
+    </div>
+  </main>
+
+  <div id="toastHost"></div>
+  <script src="/assets/api.js"></script>
+  <script src="/assets/cart.js"></script>
+  <script src="/assets/toast.js"></script>
+  <script src="/assets/auth.js"></script>
+  <script>
+    TCAuth.init();
+    if (TCApi.isLoggedIn()) window.location.href = '/dashboard.html';
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('loginBtn');
+      const err = document.getElementById('loginError');
+      err.style.display = 'none';
+      btn.disabled = true; btn.textContent = 'Logging in…';
+      try {
+        await TCApi.login(document.getElementById('email').value.trim(), document.getElementById('password').value);
+        window.location.href = '/dashboard.html';
+      } catch (e) {
+        err.textContent = e.message || 'Login failed.';
+        err.style.display = '';
+      } finally {
+        btn.disabled = false; btn.textContent = 'Log In';
+      }
+    });
+  </script>
+</body>
+</html>

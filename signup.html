@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up · TC Sports Cards</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏟️</text></svg>">
+  <link rel="stylesheet" href="/assets/theme.css">
+</head>
+<body class="auth-body">
+  <header class="site-header">
+    <div class="container nav-row">
+      <a href="/" class="logo">
+        <span class="logo-mark">TC</span>
+        <span class="logo-text" data-config="site_name">TC Sports Cards</span>
+      </a>
+      <nav class="main-nav">
+        <a href="/shop.html">Shop</a>
+        <a href="/rewards.html">Rewards</a>
+        <a href="/about.html">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="auth-main">
+    <div class="auth-card auth-card-wide">
+      <h1>Join the Rewards Club</h1>
+      <p class="muted">Free to join. Earn points on every online order — redeem 100 pts for $1 toward gift cards.</p>
+      <form id="signupForm">
+        <div class="grid-2">
+          <div class="field">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name" required>
+          </div>
+          <div class="field">
+            <label for="phone">Phone (optional)</label>
+            <input type="tel" id="phone" name="phone">
+          </div>
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required minlength="8">
+          <span class="hint">At least 8 characters.</span>
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label for="favoriteSport">Favorite Sport</label>
+            <select id="favoriteSport" name="favoriteSport">
+              <option value="">— Select —</option>
+              <option>Baseball</option>
+              <option>Basketball</option>
+              <option>Football</option>
+              <option>Hockey</option>
+              <option>Soccer</option>
+              <option>Multi-Sport</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="favoriteTeam">Favorite Team</label>
+            <input type="text" id="favoriteTeam" name="favoriteTeam" placeholder="e.g. Detroit Tigers">
+          </div>
+        </div>
+        <div class="field">
+          <label for="howDidYouHear">How'd you hear about us?</label>
+          <select id="howDidYouHear" name="howDidYouHear">
+            <option value="">— Select —</option>
+            <option>Walked in / drove by</option>
+            <option>Friend or family</option>
+            <option>Social media</option>
+            <option>Online search</option>
+            <option>Card show</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <label class="checkbox">
+          <input type="checkbox" id="marketingEmails" name="marketingEmails" checked>
+          <span>Email me about new drops and rewards bonuses</span>
+        </label>
+        <div id="signupError" class="form-error" style="display:none"></div>
+        <button type="submit" class="btn btn-primary btn-block" id="signupBtn">Create Account</button>
+      </form>
+      <p class="auth-footer">Already a member? <a href="/login.html">Log in</a></p>
+    </div>
+  </main>
+
+  <div id="toastHost"></div>
+  <script src="/assets/api.js"></script>
+  <script src="/assets/cart.js"></script>
+  <script src="/assets/toast.js"></script>
+  <script src="/assets/auth.js"></script>
+  <script>
+    TCAuth.init();
+    if (TCApi.isLoggedIn()) window.location.href = '/dashboard.html';
+
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('signupBtn');
+      const err = document.getElementById('signupError');
+      err.style.display = 'none';
+      btn.disabled = true; btn.textContent = 'Creating account…';
+      try {
+        const payload = {
+          name: document.getElementById('name').value.trim(),
+          email: document.getElementById('email').value.trim(),
+          password: document.getElementById('password').value,
+          phone: document.getElementById('phone').value.trim(),
+          favoriteSport: document.getElementById('favoriteSport').value,
+          favoriteTeam: document.getElementById('favoriteTeam').value.trim(),
+          howDidYouHear: document.getElementById('howDidYouHear').value,
+          marketingEmails: document.getElementById('marketingEmails').checked
+        };
+        await TCApi.signup(payload);
+        window.location.href = '/dashboard.html?welcome=1';
+      } catch (e) {
+        err.textContent = e.message || 'Could not create account.';
+        err.style.display = '';
+      } finally {
+        btn.disabled = false; btn.textContent = 'Create Account';
+      }
+    });
+  </script>
+</body>
+</html>
