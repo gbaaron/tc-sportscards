@@ -15,6 +15,8 @@ Set these in Netlify → Site settings → Environment variables:
 AIRTABLE_API_KEY=pat...                  # Personal Access Token (rotate after handoff)
 AIRTABLE_BASE_ID=appqso1piJgZ6ybFb       # This base
 JWT_SECRET=<random 32+ char string>      # Used to sign auth tokens
+OPENAI_API_KEY=sk-...                    # Counter Helper bot (gpt-3.5-turbo)
+OPENAI_MODEL=gpt-3.5-turbo               # Optional override; defaults to gpt-3.5-turbo
 ```
 
 The `.env.example` file at the repo root documents the same set for local dev.
@@ -33,6 +35,7 @@ The `.env.example` file at the repo root documents the same set for local dev.
 | 6 | GiftCardRedemptions | Points-to-gift-card conversions for in-store use |
 | 7 | SiteImages | Slot-based image management (hero, banners, about) |
 | 8 | SiteConfig | Key/value content config (text, hours, social links) |
+| 9 | BotConversations | Counter Helper chat turn log (one row per user→bot exchange) |
 
 User identity key across the site is **Email** (case-insensitive). JWT tokens carry `userId` (Airtable record ID) + `email` + `isAdmin`.
 
@@ -232,6 +235,36 @@ Key/value content config. Frontend uses `data-config="hero_title"` etc. to bind.
 
 ---
 
+## 9. BotConversations (`tblBotConvsTcXxxx`)
+
+Append-only log of every turn between a site visitor and the Counter Helper bot. Powered by `netlify/functions/helper-bot.js` (OpenAI `gpt-3.5-turbo`). Per CLAUDE.md §28 (Universal Helper Bot).
+
+| Field | Type | Notes |
+|---|---|---|
+| SessionID | singleLineText | Random per-tab ID (e.g., `tc-a1b2c3d4-l9k8m`). Groups all turns from one session. |
+| UserID | singleLineText | User's email if logged in; empty string otherwise. (Field name kept generic for consistency across sites.) |
+| UserMessage | multilineText | Latest user turn (clipped at 1000 chars before send) |
+| AssistantMessage | multilineText | Bot reply (clipped at 2000 chars before write) |
+| Model | singleLineText | e.g., `gpt-3.5-turbo` |
+| TokensIn | number (0) | OpenAI `prompt_tokens` count |
+| TokensOut | number (0) | OpenAI `completion_tokens` count |
+| Timestamp | dateTime (ISO) | Server-set on each turn |
+| FlaggedForReview | checkbox | Manual review marker — Aaron sets this on turns that need attention (bad refusal, hallucination, off-tone) |
+
+**Functions**: `helper-bot.js` (fire-and-forget create per turn — never blocks the chat response).
+
+**Cost guardrails** (mirrored from CLAUDE.md §28G):
+- Model: `gpt-3.5-turbo` (cheapest mainstream chat model)
+- `max_tokens`: 500 per response
+- `temperature`: 0.5
+- Last 12 turns sent to OpenAI per request (older trimmed client-side too at 24)
+- Rate limit: 1 message / 4 seconds, 40 messages / session (client-side)
+- Site context (products, tiers, SiteConfig) cached server-side for 5 minutes per cold start
+
+**Review workflow**: Filter view in Airtable by `FlaggedForReview = true` for periodic audit. Use TokensIn + TokensOut to monitor cost per session.
+
+---
+
 ## Cross-table conventions
 
 - **Email is the identity key.** Always match case-insensitively in functions (`findUserByEmail` lowercases the lookup).
@@ -251,6 +284,7 @@ Before going live:
 3. **Products**: Add 10–15 online-exclusive items with photos, prices, stock counts.
 4. **SiteConfig**: Populate all required keys in §8 table.
 5. **SiteImages**: Upload hero and about banner images to Cloudinary; insert rows with matching SlotName.
+6. **BotConversations**: Create the table (no seed rows needed — the helper-bot function will create rows on first chat). Add a view named `Flagged` filtered by `FlaggedForReview = true`.
 
 ---
 
@@ -263,6 +297,7 @@ For each table, create at minimum:
 - **Orders**: "Pending" (Status=Pending), "Today" (OrderDate is today), "By Status" (group)
 - **GiftCardRedemptions**: "Pending Issue" (Status=Pending), "Active Codes" (Status=Issued)
 - **Ratings**: "Recent" (sort by CreatedAt desc)
+- **BotConversations**: "Recent" (sort by Timestamp desc), "Flagged" (filter FlaggedForReview=true)
 
 ---
 
